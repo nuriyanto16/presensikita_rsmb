@@ -1,0 +1,38 @@
+                  {
+                     "geometry" : {
+                        "type" : "Point",
+                        "coordinates" : [
+                           -79.613049966699,
+                           38.117139120982,
+                           null,
+                           []
+                        ]
+                     },
+                     "type" : "Feature",
+                     "properties" : {
+                        "name" : "Fort Lewis Lodge",
+                        "extensions" : {
+                           "gpxx_waypointextension" : {
+                              "gpxx_address" : {
+                                 "gpxx_state" : "VA",
+                                 "gpxx_streetaddress" : "603 Old Plantation Way",
+                                 "gpxx_postalcode" : "24460",
+                                 "gpxx_country" : "",
+                                 "gpxx_city" : "Millboro"
+                              }
+                           },
+                           "mbymc_extension" : {
+                              "object_guid" : "52721",
+                              "owner_guid" : "13640",
+                              "object_type_name" : "poi",
+                              "locations_ref" : 44171,
+                              "permalink" : "https://miles-by-motorcycle.com/13640/rides/52715/mapping-va---1st-weekend-may/map/52721/fort-lewis-lodge",
+                              "readable_object_type_name" : "Point of Interest",
+                              "poiTag" : "lodging"
+                           }
+                        },
+                        "desc" : "A stone’s throw from Lexington and Staunton in the Blue Ridge Mountains, Fort Lewis is a vast 3200 acre plantation first carved from the wilderness in the 1750’s. At the heart of it all sits the Lodge, a natural retreat nestled in a scenic river valley at the foot of Shenandoah Mountain.",
+                        "cmt" : "Upscale accommodations in a beautiful isolated setting. A country retreat in the Blue Ridge Mountains ideal for outdoor enthusiasts."
+                     }
+                  }
+
