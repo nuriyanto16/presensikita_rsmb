@@ -1,0 +1,42 @@
+#################
+## VS Code
+#################
+.vscode/
+
+#################
+## PhpStorm
+#################
+.idea/
+
+#################
+## NetBeans
+#################
+nbproject/
+
+#############
+## Windows detritus
+#############
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Mac crap
+.DS_Store
+
+# Ignore App Config, leave to default
+application/config/database.php
+application/cache/
+application/logs/
+uploadfile/
+uploads/
+application/modules/rcsa/
+repository/
+.history/
+*.bak
