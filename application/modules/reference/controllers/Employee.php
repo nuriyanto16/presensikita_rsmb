@@ -1452,7 +1452,7 @@ class Employee extends Mst_controller
         curl_setopt_array($curl, array(
             // CURLOPT_URL => 'https://api.rsmb.co.id:4848/app/sdi/get_master_unit_kerja',
             // CURLOPT_URL => 'http://localhost/rsmb/api/public/app/sdi/get_master_unit_kerja',
-            CURLOPT_URL => API_SIMRS.'app/sdi/get_master_unit_kerja',
+            CURLOPT_URL => API_SIMRS_PEG2.'/get_master_unit_kerja',
 
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
@@ -1490,7 +1490,7 @@ class Employee extends Mst_controller
         curl_setopt_array($curl, array(
             // CURLOPT_URL => 'https://api.rsmb.co.id:4848/app/sdi/get_master_jabatan',
             // CURLOPT_URL => 'http://localhost/rsmb/api/public/app/sdi/get_master_jabatan',
-            CURLOPT_URL => API_SIMRS.'app/sdi/get_master_jabatan',
+            CURLOPT_URL => API_SIMRS_PEG2.'/get_master_jabatan',
 
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
@@ -1529,7 +1529,7 @@ class Employee extends Mst_controller
         curl_setopt_array($curl, array(
             // CURLOPT_URL => 'https://api.rsmb.co.id:4848/app/sdi/get_pegawai_aktif',
             // CURLOPT_URL => 'http://localhost/rsmb/api/public/app/sdi/get_pegawai_aktif',
-            CURLOPT_URL => API_SIMRS.'app/sdi/get_pegawai_aktif',
+            CURLOPT_URL => API_SIMRS_PEG.'/get_pegawai_aktif',
 
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
@@ -1540,7 +1540,8 @@ class Employee extends Mst_controller
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => array(
                 'x-username: r5mb53!',
-                'x-password: p4r1purn4'
+                'x-password: p4r1purn4',
+                'X-API-Key: a033a165-88a5-42d5-81a2-e14ce320af2b'
             ),
         ));
 

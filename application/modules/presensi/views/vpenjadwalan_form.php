@@ -181,15 +181,15 @@
                                         </div>
                                     </div>
                                     
-																		<div class="row">
-																			<div
-																					class="form-group col-md-12 <?php if (!empty(form_error('unitId'))) echo 'has-error'; ?>">
-																					<?php echo form_label('Organisasi', 'unitId', $label); ?>
-																					<?php echo form_dropdown(isset($unitId) ? $unitId : "") ?>
-																			</div><!-- /.form-group -->
+                                    <div class="row">
+                                        <div
+                                            class="form-group col-md-12 <?php if (!empty(form_error('unitId'))) echo 'has-error'; ?>">
+                                            <?php echo form_label('Organisasi', 'unitId', $label); ?>
+                                            <?php echo form_dropdown(isset($unitId) ? $unitId : "") ?>
+                                        </div><!-- /.form-group -->
                                     </div>
 
-																		<div class="row">
+                                    <div class="row">
                                         <div
                                             class="form-group col-md-12 <?php if (!empty(form_error('position_code'))) echo 'has-error'; ?>">
                                             <?php echo form_label('Posisi / Jabatan', 'position_code', $label); ?>
@@ -219,31 +219,31 @@
                             <div class="x_panel">
                               <div class="row">
                                 <div class="col-md-6">
-																	<div class="form-group row">
-																		<label class="control-label col-md-2 col-sm-2 col-xs-2">Periode</label>
-																		<div class="col-md-3 col-sm-3 col-xs-3">
-																		<?php echo isset($periode_id) ? form_dropdown($periode_id) : "" ?>
-																		</div>
-																		<label class="control-label col-md-2 col-sm-2 col-xs-2">Bulan</label>
-																		<div class="col-md-3 col-sm-3 col-xs-3">  
-																			<?php echo form_dropdown(isset($bulan_id) ? $bulan_id : "") ?>
-																		</div>
-																	</div>
+                                <div class="form-group row">
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-2">Periode</label>
+                                    <div class="col-md-3 col-sm-3 col-xs-3">
+                                    <?php echo isset($periode_id) ? form_dropdown($periode_id) : "" ?>
+                                    </div>
+                                    <label class="control-label col-md-2 col-sm-2 col-xs-2">Bulan</label>
+                                    <div class="col-md-3 col-sm-3 col-xs-3">  
+                                        <?php echo form_dropdown(isset($bulan_id) ? $bulan_id : "") ?>
+                                    </div>
                                 </div>
-																<div class="col-md-6">
-																	<div class="form-group row">
-																		<div class="col-md-2 col-sm-2 col-xs-2">
-																			<button type="button" id="btn-tampilkan" class="btn btn-success">Tampilkan Jadwal</button>
-																		</div>
-                                    <label class="control-label col-md-2 col-sm-2 col-xs-2"></label>
-                                    <div class="col-md-2 col-sm-2 col-xs-2">
-                                        <button type="button" class="btn btn-warning" id="btn-generate">Generate Jadwal</button>
-																		</div>
-																		<label class="control-label col-md-2 col-sm-2 col-xs-2"></label>
-																		<div class="col-md-2 col-sm-2 col-xs-2">
-																			<button type="button" id="btnExportDetailV2" class="btn btn-success">Preview Hasil Jadwal</button>
-																		</div>
-																	</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group row">
+                                        <div class="col-md-2 col-sm-2 col-xs-2">
+                                            <button type="button" id="btn-tampilkan" class="btn btn-success">Tampilkan Jadwal</button>
+                                        </div>
+                                        <label class="control-label col-md-2 col-sm-2 col-xs-2"></label>
+                                        <div class="col-md-2 col-sm-2 col-xs-2">
+                                            <button type="button" class="btn btn-warning" id="btn-generate">Generate Jadwal</button>
+                                        </div>
+                                        <label class="control-label col-md-2 col-sm-2 col-xs-2"></label>
+                                        <div class="col-md-2 col-sm-2 col-xs-2">
+                                            <button type="button" id="btnExportDetailV2" class="btn btn-success">Preview Hasil Jadwal</button>
+                                        </div>
+                                    </div>
                                 </div>
                               </div>
                             </div>
@@ -255,7 +255,7 @@
                                       <h4><b>Detail Jadwal Kerja</b></h4>
                                     </div>
                                     <div class="col-sm-6">
-                                        <button type="button" id="upload-excel" class="btn btn-success pull-right">Upload Jadwal Kerja</button>
+                                        <button type="button" id="upload-excel" class="btn btn-success pull-right" style="visibility: hidden;">Upload Jadwal Kerja</button>
                                     </div>
                                     <div class="col-sm-12">
                                       <table id="dt-listjadwal" class="table table-striped table-responsive" width="100%"></table>
@@ -443,7 +443,7 @@
             </div>
             <div class="modal-body overflow-edit" style="max-height: 800px">
 
-                <div class="row">
+                <!-- <div class="row">
                     <div class="box-body" style="max-height: 800px">
                         <form>
                           <div class="row">
@@ -456,7 +456,7 @@
                         </form>
 
                     </div>
-                </div>
+                </div> -->
 
                 <div class="row">
                   <div class="box-body">

@@ -2,6 +2,8 @@
     "require": {
         "nesbot/carbon": "^2.31.0",
         "guzzlehttp/guzzle": "^6.5",
-        "mpdf/mpdf": "^8.0"
+        "mpdf/mpdf": "^8.0",
+        "phpoffice/phpspreadsheet": "^1.29",
+        "vlucas/phpdotenv": "2.1"
     }
 }

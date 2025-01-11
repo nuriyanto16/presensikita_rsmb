@@ -25,14 +25,14 @@ class Mabsensi extends Mst_model
             . ", DATE_FORMAT(a.tanggal, '%d-%M-%Y') AS tanggal, "
             . ", DATE_FORMAT(a.tanggal, '%d-%m-%Y %H:%i:%s') AS tglfinger, "
             . ", b.comp_code, c.compid, c.unitid, c.positionid, c.position_code, c.active"
-            . ", o.unitname, pe.position_desc");
+            . ", o.unitname, pe.position_desc, a.machine_id, a.port, a.ip");
         $this->db->from("{$this->table} a");
         $this->db->join(config_item('table_employee') . " c", "a.fid=c.fid", "inner");
         $this->db->join(config_item('table_company') . " b", "c.compid = b.compid", "inner");
         $this->db->join(config_item('table_unit') . " o", "c.unitid = o.unitid", "inner");
         $this->db->join(config_item('table_position_employee') . " pe", "c.position_code = pe.position_code", "inner");
         $this->db->where("c.active", "1"); // data tidak aktif tidak ditampilkan
-
+        $this->db->where("a.tanggal >=", date("Y-m-d", strtotime("-3 months")));
         if($this->session->userdata(sess_prefix()."roleid") != 1 ){
             if($this->session->userdata(sess_prefix()."roleid") == 2 ){
                 $this->db->where("c.compid", $this->session->userdata(sess_prefix()."compId"));
@@ -104,7 +104,7 @@ class Mabsensi extends Mst_model
         $this->db->join(config_item('table_unit') . " o", "c.unitid = o.unitid", "inner");
         $this->db->join(config_item('table_position_employee') . " pe", "c.position_code = pe.position_code", "inner");
         $this->db->where("c.active", "1"); // data tidak aktif tidak ditampilkan
-
+        $this->db->where("a.tanggal >=", date("Y-m-d", strtotime("-3 months")));
         if($this->session->userdata(sess_prefix()."roleid") != 1 ){
             if($this->session->userdata(sess_prefix()."roleid") == 2 ){
                 $this->db->where("c.compid", $this->session->userdata(sess_prefix()."compId"));

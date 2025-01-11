@@ -22,7 +22,7 @@ class Munit extends Mst_model
     function get($id = null, $offset = null, $limit = null, $order = null, $filters = null)
     {
         $this->db->select("u.unitId, u.unitCode, u.unitName, u.unitAlias, u.parentUnitId"
-            . ", u.active, u.COMPID, u.costcenter_code"
+            . ", u.active, u.COMPID, u.costcenter_code, u.multiple_kode_unit"
             . ", c.COMP_CODE, c.COMP_NAME, c.COMP_CODE_SAP");
         $this->db->from("{$this->table} u");
         $this->db->join(config_item("table_p_z_company") . " c", "u.COMPID=c.COMPID", "left");

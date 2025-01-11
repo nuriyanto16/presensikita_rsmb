@@ -395,7 +395,7 @@ $(document).ready(function () {
             e.preventDefault();
             let paramPost = $("#form").serialize();
         
-    
+            $('#loading-spinner').show();
             // get pie
             //resetPieData();
             $.ajax({
@@ -451,6 +451,7 @@ $(document).ready(function () {
             }).always(function() {
                 //chartRkapTahunLalu.update();
                 //chartRkapTahunIni.update();
+                $('#loading-spinner').hide();
             });
         });
 

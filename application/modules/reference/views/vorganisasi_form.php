@@ -25,7 +25,7 @@
         );
         ?>
 
-        <div class="col-md-6 col-sm-12 col-xs-12">
+        <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="x_panel">
                 <div class="x_title">
                     <i class="fa fa-info-circle"></i> <i><b>(*)</b> harus diisi !</i>
@@ -85,8 +85,31 @@
                             class="form-group col-md-12 <?php if (!empty(form_error('unitName'))) echo 'has-error'; ?>">
                             <?php echo form_label('Nama *', 'unitName', $label);
                             echo form_input(isset($unitName) ? $unitName : "");
+                            echo form_input(isset($multiple_kode_unit) ? $multiple_kode_unit : "");
                             ?>
                         </div><!-- /.form-group -->
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-3">
+                            <?php echo form_label('&nbsp;', '', ''); ?>
+                            <br/>
+                            <button id="btn-carijadwal"  class="btn btn-info" type="button">
+                                <span class="fa fa-plus"></span> Cari Jadwal
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="x_panel">
+                        <div class="x_content">                             
+                            <div class="row">
+                            <div class="col-sm-12">
+                                <h4><b>Detail Jadwal Kerja</b></h4>
+                            </div>
+                            <div class="col-sm-12">
+                                <table id="dt-listjadwal" class="table table-striped table-responsive" width="100%"></table>
+                            </div><!-- /.col-sm-12 -->
+                            </div>
+                        </div>
                     </div>
 
                     <!-- <div class="row">
@@ -116,3 +139,23 @@
         </div>
     </div>
 </div>
+
+<!-- modal-atasan-langsung -->
+<div class="modal fade" id="modal_jadwal" tabindex="-1" role="dialog" aria-labelledby="modal_jadwal" aria-hidden="true">
+    <div class="modal-dialog  ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                <h4 class="modal-title custom_align" id="Heading">Pilih Jadwal/Shift Kerja</h4>
+            </div>
+            <div class="modal-body overflow-edit">
+                <div class="row">
+                    <!-- <div class="box-body"> -->
+                    <table id="dt-list" class="table table-striped table-responsive" width="100%"></table>
+                    <!-- </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div><!-- modal-atasan-langsung -->

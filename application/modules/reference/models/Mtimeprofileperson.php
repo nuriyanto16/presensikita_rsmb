@@ -24,7 +24,7 @@ class Mtimeprofileperson extends Mst_model
                       . ", DATE_FORMAT(a.tp_start_date, '%d-%m-%Y') AS tp_start_date, DATE_FORMAT(a.tp_end_date, '%d-%m-%Y') AS tp_end_date,"
                       . ", c.deskripsi, c.kode, b.compid, b.comp_name, a.active, 
                            DATE_FORMAT(c.hari_1_jam_in, '%H:%i:%s') AS hari_1_jam_in, 
-                           DATE_FORMAT(c.hari_1_jam_out, '%H:%i:%s') AS hari_1_jam_out");
+                           DATE_FORMAT(c.hari_1_jam_out, '%H:%i:%s') AS hari_1_jam_out, a.counter");
         $this->db->from("{$this->table} a");
         $this->db->join(config_item('table_company') . " b", "b.compid = a.compid", "inner");
         $this->db->join(config_item('table_time_profile') . " c", "a.id_tp = c.id_tp", "inner");

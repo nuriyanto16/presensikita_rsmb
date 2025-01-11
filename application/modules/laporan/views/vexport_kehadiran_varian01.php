@@ -102,7 +102,11 @@
         
         // $persen_tidak_hadir = 0;
         $persen_terlambat = 0;
-
+        $jml_terlambat = 0;
+        $menit_terlambat = 0;
+        $jml_psw = 0;
+        $tot_jml_jam_kerja = 0;
+        $tot_jml_jam_kurang = 0;
         $potongan_mangkir   = 0;
         $potongan_tl_psw    = 0;
 
@@ -130,6 +134,12 @@
                 } else {
                     $persen_terlambat = 20;
                 }
+                $jml_terlambat = $jml_terlambat + $row->jml_terlambat;
+                $menit_terlambat = $menit_terlambat + $row->menit_terlambat;
+                $tot_jml_jam_kerja = $tot_jml_jam_kerja + $row->jml_jam_kerja;
+                $tot_jml_jam_kurang = $tot_jml_jam_kurang + $row->jml_jam_kurang;
+                $jml_psw = 0;
+                $jml_hadir = 0;
 
                 // $persen_tidak_hadir = min(25, $total_point_jml_ketidakhadiran * 5);
                 // $persen_terlambat = min(25, $total_point_jml_ketidakhadiran * 5);
@@ -150,7 +160,13 @@
                             $persen_terlambat = 20;
                         }
                         echo "<tr>
-                            <td colspan='10'>Total:</td>
+                            <td colspan='5'>Total:</td>
+                            <td align='center'>$jml_terlambat</td>
+                            <td align='center'>".formatMinutesToTime($menit_terlambat)."</td>
+                            <td align='center'>$tot_jml_jam_kurang</td>
+                            <td colspan='1'></td>
+                            <td align='center'>$tot_jml_jam_kerja</td>
+                            <td align='center' colspan='1'></td>
                             <td align='center'>$total_point_jml_ketidakhadiran</td>
                             <td align='center'>".$persen_tidak_hadir."%</td>
                             <td align='center'>$jml_psw_tl_tot</td>
@@ -158,6 +174,8 @@
                         </tr>";
                     }
                     $total_point_jml_ketidakhadiran = 0;
+                    $jml_terlambat = 0;
+                    $menit_terlambat = 0;
                     $jml_psw_tl_tot = 0;
                     $nik = $row->nik;
                 ?>    
@@ -168,19 +186,19 @@
                     </tr>
                     <tr style="border: none;">
                         <td style="border: none;">NIP</td>
-                        <td style="border: none;" colspan="10">: <?= $row->nik; ?></td>
+                        <td style="border: none;" colspan="15">: <?= $row->nik; ?></td>
                     </tr>
                     <tr style="border: none;">
                         <td style="border: none;">Nama</td>
-                        <td style="border: none;" colspan="10">: <?= $row->emp_name; ?></td>
+                        <td style="border: none;" colspan="15">: <?= $row->emp_name; ?></td>
                     </tr>
                     <tr style="border: none;">
                         <td style="border: none;">Unit Kerja</td>
-                        <td style="border: none;" colspan="10">: <?= $row->unitName; ?></td>
+                        <td style="border: none;" colspan="15">: <?= $row->unitName; ?></td>
                     </tr>
                     <tr style="border: none;">
                         <td style="border: none;">Jabatan</td>
-                        <td style="border: none;" colspan="10">: <?= $row->position_desc; ?></td>
+                        <td style="border: none;" colspan="15">: <?= $row->position_desc; ?></td>
                     </tr>
                 </table>
                 
@@ -192,12 +210,14 @@
                         <td align="center" class="layout" rowspan="2">Scan Masuk</td>
                         <td align="center" class="layout" rowspan="2">Scan Pulang</td>
                         <td align="center" class="layout" rowspan="2">Terlambat</td>
-                        <td align="center" class="layout" rowspan="2">Plg Cepat</td>
+                        <td align="center" class="layout" rowspan="2">Jam Menit Terlambat</td>
+                        <td align="center" class="layout" rowspan="2">Jml Jam Kurang</td>
                         <td align="center" class="layout" rowspan="2">Lembur</td>
-                        <td align="center" class="layout" rowspan="2">Jml hadir</td>
+                        <td align="center" class="layout" rowspan="2">Jml Jam Hadir</td>
                         <td align="center" class="layout" rowspan="2">Pengecualian</td>
                         <td align="center" class="layout" colspan="2">Poin Ketidak Hadiran</td>
                         <td align="center" class="layout" colspan="2">Poin Keterlambatan </br> & Cepat Pulang</td>
+                        <td align="center" class="layout" rowspan="2">Counter Ganti <br/> Shift / Jadwal</td>
                     </tr>
                     <tr>
                         <td align="center" class="layout">Jumlah</td>
@@ -210,6 +230,8 @@
                     $bulan = $row->bulan_nama;
                     $tahun = $row->tahun;
                     $point_jml_ketidakhadiran = 0;
+                    $jml_terlambat = 0;
+                    $menit_terlambat = 0;
                     $jml_psw_tl = 0;
 
                     $potongan_mangkir   = 0; //$row->jml_pot_point_kehadiran;
@@ -255,7 +277,8 @@
                         $jdwl_pulang = $keterangan;
                         $jml_jam_kerja = 0;
                     }
-                    
+                    $jml_terlambat = $jml_terlambat + $row->jml_terlambat;
+                    $menit_terlambat = $menit_terlambat + $row->menit_terlambat;
                     /*
                     if($row->id_abs_type == 3 || $row->id_abs_type == 4 || $row->id_abs_type == 5 || $row->id_abs_type == 6 ||
                     $row->id_abs_type == 7 || $row->id_abs_type == 9 || $row->id_abs_type == 10 
@@ -289,6 +312,7 @@
                             <td align='center'>".$jam_masuk."</td>
                             <td align='center'>".$jam_pulang."</td>
                             <td align='center'>".$row->jml_terlambat."</td>
+                            <td align='center'>".formatMinutesToTime($row->menit_terlambat)."</td>
                             <td align='center'>".$row->jml_jam_kurang."</td>
                             <td align='center'>".$row->jml_jam_lembur."</td>
                             <td align='center'>".$jml_jam_kerja ."</td>
@@ -297,6 +321,7 @@
                             <td></td>
                             <td align='center'>".$jml_psw_tl. "</td>
                             <td></td>
+                            <td align='center'>".$row->counter ."</td>
                         </tr>";
                     ?>
                 <?php
@@ -393,6 +418,7 @@
                             <td align='center'>".$jam_masuk."</td>
                             <td align='center'>".$jam_pulang."</td>
                             <td align='center'>".$row->jml_terlambat."</td>
+                            <td align='center'>".formatMinutesToTime($row->menit_terlambat)."</td>
                             <td align='center'>".$row->jml_jam_kurang."</td>
                             <td align='center'>".$row->jml_jam_lembur."</td>
                             <td align='center'>".$jml_jam_kerja ."</td>
@@ -401,6 +427,7 @@
                             <td></td>
                             <td align='center'>".$jml_psw_tl. "</td>
                             <td></td>
+                            <td align='center'>".$row->counter ."</td>
                         </tr>";
                     $total_point_jml_ketidakhadiran += $point_jml_ketidakhadiran_;
                     $previous_nik = $row->nik;
@@ -423,7 +450,7 @@
                     $persen_terlambat = 20;
                 }
                 echo "<tr>
-                            <td colspan='10'>Total</td>
+                            <td colspan='12'>Total</td>
                             <td align='center'>$total_point_jml_ketidakhadiran</td>
                             <td align='center'>".$persen_tidak_hadir."%</td>
                             <td align='center'>$jml_psw_tl_tot</td>
@@ -487,5 +514,14 @@ function _potongan($v_jml, $v_stat){
 
         return $v_ret;
 
+    }
+
+    function formatMinutesToTime($minutes) {
+        // Menghitung jam dan menit
+        $hours = intdiv($minutes, 60); // Pembagian untuk mendapatkan jam
+        $remainingMinutes = $minutes % 60; // Sisa menit
+    
+        // Format output ke format waktu (jam:menit)
+        return sprintf("%d:%02d", $hours, $remainingMinutes);
     }
 ?>

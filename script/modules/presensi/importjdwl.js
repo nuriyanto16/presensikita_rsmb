@@ -1,6 +1,22 @@
 "use strict";
 let dtList = null;
 $(document).ready(function () {
+
+    // Ketika tombol dengan id 'btnShowModal' diklik
+    $(document).on('click', '.btnShowModal', function() {
+        // Mendapatkan ID dari tombol yang diklik
+        var unitId = $(this).data('id');
+        var unitName = $(this).data('unit-name');
+
+        // Set ID unit yang dipilih pada form
+        $('#kdunit').val(unitId);  // Set ID unit ke input form "kdunit"
+        $('#namaunit').val(unitName);  // Set ID unit ke input form "unitName"
+        
+        // Menampilkan modal
+        $('#parameterModaljadwal').modal('show');
+    }); 
+        
+
     dtList = new Tabulator("#dt-list", {
         columns: [
             {
@@ -9,19 +25,11 @@ $(document).ready(function () {
             },
             {
                 title: "Nama", field: "unitName", sorter: "string",
-                width: "43%", headerFilter: "input"
-            },
-            {
-                title: "Tahun", field: "tahun", sorter: "string",
-                width: "15%", headerFilter: "input"
-            },
-            {
-                title: "Bulan", field: "bulan", sorter: "string",
-                width: "20%", headerFilter: "input"
+                width: "70%", headerFilter: "input"
             },
             {
                 title: "#", field: "aksi", headerSort: false, formatter: "html",
-                width: "10%", align: "center", cssClass: "text-center"
+                width: "20%", align: "center", cssClass: "text-center"
             },
         ],
         locale: 'id',
@@ -77,4 +85,49 @@ $(document).ready(function () {
     });
 
     dtList.setData();
+
+
+
+    $('#parameterForm').on('submit', function (e) {
+        e.preventDefault(); // Menghindari refresh halaman
+
+        // Menampilkan loading
+        $('#loading').show();
+        
+        var formData = new FormData();
+        formData.append('periode_id', $('#periode_id').val());
+        formData.append('bulan_id', $('#bulan_id').val());
+        formData.append('kdunit', $('#kdunit').val());
+        formData.append('file', $('#fileUpload')[0].files[0]);
+
+        $.ajax({
+            url: base_url + "presensi/importjdwl/uploadjadwal",  // Ganti dengan URL endpoint An
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                $('#loading').hide(); // Menyembunyikan loading
+                if (response.success) {
+                    alert('Data berhasil diimpor: ' + response.message);
+                    $('#parameterModaljadwal').modal('hide');  // Menutup modal setelah sukses
+                } else {
+                    alert('Terjadi kesalahan: ' + response.message);
+                }
+            },
+            error: function () {
+                $('#loading').hide();
+                alert('Gagal mengirim data, coba lagi.');
+            }
+        });
+    });
+    
+
+
+
+
 });
+
+
+
+

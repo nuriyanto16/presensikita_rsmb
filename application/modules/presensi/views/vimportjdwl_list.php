@@ -1,3 +1,11 @@
+<style>
+    .select2 {
+        max-width: 300px; /* Ganti 300px dengan ukuran yang sesuai */
+        width: 100%; /* Menyesuaikan lebar dengan container */
+    }
+</style>
+
+
 <div class="container-fluid">
     <div class="row bg-title">
         <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
@@ -93,3 +101,75 @@
         </div>
     </div>
 </div>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="parameterModaljadwal" tabindex="-1" role="dialog" aria-labelledby="parameterModaljadwal" aria-hidden="true">
+    <div class="modal-dialog modal-xs">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </button>
+                <h4 class="modal-title custom_align" id="Heading">Import Jadwal</h4>
+            </div>
+            <div class="modal-body overflow-edit" style="max-height: 800px">
+                <div class="row">
+                    <div class="box-body" style="max-height: 800px">
+                        <form id="parameterForm" enctype="multipart/form-data">
+                          <div class="row">
+                            <div class="form-group col-md-12">
+                                <label for="kdunit" class="form-label">Kode Unit</label>
+                                <input type="text" id="kdunit" class="form-control" required readonly>
+                            </div>
+
+                            <div class="form-group col-md-12">
+                                <label for="namaunit" class="form-label">Nama Unit</label>
+                                <input type="text" id="namaunit" class="form-control" required readonly>
+                            </div>
+
+                            <div class="form-group col-md-12">
+                                <label class="control-label col-md-12 col-sm-12 col-xs-12">Periode* </label>
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <?php echo isset($periode_id) ? form_dropdown($periode_id) : "" ?>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-md-12">
+                                <label class="control-label col-md-12 col-sm-12 col-xs-12">Bulan*</label>
+                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                    <?php echo form_dropdown(isset($bulan_id) ? $bulan_id : "") ?>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-md-12">
+                                <label for="fileUpload" class="form-label">Upload File</label>
+                                <input type="file" id="fileUpload" class="form-control" required>
+                            </div>
+                          </div>
+
+                          <!-- Loading Indicator -->
+                          <div id="loading" class="text-center" style="display:none;">
+                              <p>Loading...</p>
+                          </div>
+
+                          <!-- Button Submit -->
+                          <div class="row">
+                              <div class="box-body">
+                                  <button type="submit" id="upload-jadwal" class="btn btn-primary pull-right">
+                                      <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Upload
+                                  </button>
+                              </div>
+                          </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><!-- /.modal-jadwal -->
+
+
+

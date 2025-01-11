@@ -32,10 +32,10 @@ class Mimportjdwl extends Mst_model
                 $this->db->where("c.COMPID", $this->session->userdata(sess_prefix()."compId"));
             }else if($this->session->userdata(sess_prefix()."roleid") == 3 ){
                 $this->db->where("u.unitid", $this->session->userdata(sess_prefix()."unitId"));
-                $this->db->or_where("u.unitid", 1);
+                // $this->db->or_where("u.unitid", 1);
             }else if($this->session->userdata(sess_prefix()."roleid") == 4 ){
                 $this->db->where("u.unitid", $this->session->userdata(sess_prefix()."unitId"));
-                $this->db->or_where("u.unitid", 1);
+                // $this->db->or_where("u.unitid", 1);
             }else{
                 $this->db->where("c.COMPID", $this->session->userdata(sess_prefix()."compId"));
             }
@@ -92,10 +92,10 @@ class Mimportjdwl extends Mst_model
             if($this->session->userdata(sess_prefix()."roleid") == 2 ){
                 $this->db->where("c.COMPID", $this->session->userdata(sess_prefix()."compId"));
             }else if($this->session->userdata(sess_prefix()."roleid") == 3 ){
-                $this->db->where("u.unitid", 1);
+                // $this->db->where("u.unitid", 1);
                 $this->db->where("u.unitid", $this->session->userdata(sess_prefix()."unitId"));
             }else if($this->session->userdata(sess_prefix()."roleid") == 4 ){
-                $this->db->where("u.unitid", 1);
+                // $this->db->where("u.unitid", 1);
                 $this->db->where("u.unitid", $this->session->userdata(sess_prefix()."unitId"));
             }else{
                 $this->db->where("c.COMPID", $this->session->userdata(sess_prefix()."compId"));
@@ -256,21 +256,153 @@ class Mimportjdwl extends Mst_model
         }
     }
 
-    public function deleteAllOrganisasi() {
-        // Check if there's data in the table
-        $count = $this->db->count_all('z_unit'); // Get the count of records in the 'organisasi' table
-        
-        if ($count > 0) {
-            // Delete all organizational data from the table
-            $this->db->empty_table('z_unit'); // Assuming your table is named 'organisasi'
-            return true; // Indicate that deletion was successful
+    public function get_multiple_kode_unit_by_unitCode($unitCode) {
+        // Query untuk memilih multiple_kode_unit dari tabel z_unit
+        $this->db->select('multiple_kode_unit');
+        $this->db->where('unitCode', $unitCode); // Kondisi pencarian berdasarkan unitCode
+        $query = $this->db->get('z_unit'); // Tabel z_unit
+
+        // Mengecek apakah ada data
+        if ($query->num_rows() > 0) {
+            // Mengembalikan hasil pertama (bentuk objek)
+            return $query->row()->multiple_kode_unit;
         } else {
-            return false; // Indicate that no deletion was performed
+            // Jika tidak ada data ditemukan, mengembalikan null atau pesan error
+            return null;
         }
     }
 
-    public function insertOrganisasi($data) {
-        // Insert data into the organizational table
-        $this->db->insert('z_unit', $data); // Assuming your table is named 'organisasi'
+    public function get_multiple_kode_unit_by_unitAll() {
+        // Query untuk memilih multiple_kode_unit dari tabel z_unit
+        $this->db->select('id_tp');
+        $this->db->from("z_time_profile");
+        $this->db->where('jenis_pengajuan_id', 2);
+   
+        $Q = $this->db->get();
+        $this->_data = $Q->result();
+        $Q->free_result();
+        return $this->_data;
     }
+    
+    public function getIdTpFromCodes($modified_string, $param_kode) {
+        // Menyusun query untuk mencari id_tp
+        $this->db->select('id_tp');
+        $this->db->from('z_time_profile');
+        $this->db->where_in('id_tp', explode(',', $modified_string)); // Gunakan explode untuk mengubah string menjadi array
+        $this->db->where('kode', $param_kode); // Menambahkan kondisi kode
+        $this->db->limit(1);
+        
+        // Menjalankan query dan mengambil hasil
+        $query = $this->db->get();
+        
+        if ($query->num_rows() > 0) {
+            return $query->row_array();// Mengembalikan data sebagai array asosiatif
+        } else {
+            return null; // Jika tidak ada data ditemukan
+        }
+    }
+
+    public function getNikPegawai($fid) {
+        // Menyusun query untuk mencari id_tp
+        $this->db->select('nik');
+        $this->db->from('z_karyawan');
+        $this->db->where('fid', $fid); // Menambahkan kondisi kode
+        $this->db->limit(1);
+        
+        // Menjalankan query dan mengambil hasil
+        $query = $this->db->get();
+        
+        if ($query->num_rows() > 0) {
+            return $query->row_array();// Mengembalikan data sebagai array asosiatif
+        } else {
+            return null; // Jika tidak ada data ditemukan
+        }
+    }
+
+    public function InsertUpdateShift_($nik, $tp_start_date, $shift) {
+        // Cek apakah sudah ada data dengan ID Finger dan tanggal
+        $this->db->where('nik', $nik);
+        $this->db->where('tp_start_date', $tp_start_date);
+        $query = $this->db->get('z_tp_person');
+
+        // Jika data sudah ada, lakukan update
+        if ($query->num_rows() > 0) {
+            // Update data jika sudah ada
+            $data = array(
+                'id_tp' => $shift
+            );
+            $this->db->set('counter', 'counter + 1', false);  // false agar tidak dianggap sebagai string
+            $this->db->where('nik', $nik);
+            $this->db->where('tp_start_date', $tp_start_date);
+            $this->db->update('z_tp_person', $data);
+            return $this->db->affected_rows() > 0;
+        } else {
+            // Jika data belum ada, lakukan insert
+            $data = array(
+                'nik' => $nik,
+                'tp_start_date' => $tp_start_date,
+                'tp_end_date' => $tp_start_date,
+                'id_tp' => $shift,
+                'compid' => 1,
+                'comp_code' => 'ABCDE1'
+            );
+            $this->db->insert('z_tp_person', $data);
+            return $this->db->insert_id();
+        }
+    }
+
+    public function InsertUpdateShift($nik, $tp_start_date, $shift) {
+        // Cek apakah sudah ada data dengan NIK dan tanggal
+        $query = $this->db->select('id_tp, tp_start_date, counter') // Tambahkan id_tp di sini
+                 ->where('nik', $nik)
+                 ->where('tp_start_date', $tp_start_date)
+                 ->get('z_tp_person');
+    
+        if ($query->num_rows() > 0) {
+            // Data ditemukan, ambil data yang ada
+            $existing_data = $query->row();
+    
+            if (isset($existing_data->id_tp) && $existing_data->id_tp == $shift) {
+                // Jika id_tp dan tp_start_date sama, hanya tambahkan counter
+                $data = array(
+                    'id_tp' => $shift
+                );
+                $this->db->set($data);
+                $this->db->where('nik', $nik);
+                $this->db->where('tp_start_date', $tp_start_date);
+                $this->db->update('z_tp_person');
+            } else {
+                // Jika id_tp berbeda, update id_tp dan tambahkan counter
+                $data = array(
+                    'id_tp' => $shift
+                );
+                $this->db->set('counter', 'counter + 1', false); // Operasi numerik
+                $this->db->set($data);
+                $this->db->where('nik', $nik);
+                $this->db->where('tp_start_date', $tp_start_date);
+                $this->db->update('z_tp_person');
+            }
+            return $this->db->affected_rows() > 0;
+        } else {
+            // Jika data belum ada, lakukan insert
+            $data = array(
+                'nik' => $nik,
+                'tp_start_date' => $tp_start_date,
+                'tp_end_date' => $tp_start_date,
+                'id_tp' => $shift,
+                'counter' => 0, // Mulai dengan counter = 1 untuk data baru
+                'compid' => 1,
+                'comp_code' => 'ABCDE1'
+            );
+            $this->db->insert('z_tp_person', $data);
+            return $this->db->insert_id();
+        }
+    }
+    
+
+
+
+
+
+
 }

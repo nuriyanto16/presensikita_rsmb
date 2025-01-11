@@ -33,7 +33,7 @@ $(document).ready(function () {
         columns: [
             {
                 titleFormatter: newIconPlt, headerSort: false, formatter: fmEditIcon,
-                width: "150", align: "center", cssClass: "text-center",
+                width: "15%", align: "center", cssClass: "text-center",
                 cellClick: function(e, cell) {
                     if (e.target.title === 'delete') {
                         let rowData = cell.getRow().getData();
@@ -54,19 +54,22 @@ $(document).ready(function () {
                 }
             },{
                 title: "Tanggal", field: "tanggal", sorter: "string",
-                width: "100", align: "left"
+                width: "15%", align: "left"
             },{
-                title: "Kode Jadwal", field: "kode", sorter: "string",
-                width: "200", align: "left"
+                title: "Kode <br/> Jadwal", field: "kode", sorter: "string",
+                width: "15%", align: "left"
             },{
                 title: "Keterangan", field: "deskripsi", sorter: "string",
-                width: "300", align: "left"
+                width: "15%", align: "left"
             },{
-                title: "Jadwal Masuk", field: "hari_1_jam_in", headerSort: false, sorter: "string",
-                width: "200", align: "center", cssClass: "text-center"
+                title: "Jadwal <br/> Masuk", field: "hari_1_jam_in", headerSort: false, sorter: "string",
+                width: "10%", align: "center", cssClass: "text-center"
             },{
-                title: "Jadwal Pulang", field: "hari_1_jam_out", headerSort: false, sorter: "string",
-                width: "200", align: "center", cssClass: "text-center"
+                title: "Jadwal <br/> Pulang", field: "hari_1_jam_out", headerSort: false, sorter: "string",
+                width: "10%", align: "center", cssClass: "text-center"
+            },{
+                title: "Counter <br/> Perubahan", field: "counter", headerSort: false, sorter: "string",
+                width: "20%", align: "center", cssClass: "text-center"
             }
         ],
         locale: 'id',
@@ -591,17 +594,17 @@ $(document).ready(function () {
         var bulan_id = elbulanId.val();
         var emp_id = 0; //$("#emp_id").val();
         var unit_id = elUnitId.val();
-
+        alert(comp_id);
 
         e.preventDefault();
 
 
         // get pie
-        //resetPieData();
+        //resetPieData();s
         $.ajax({
             type: "POST",
             url: base_url + "laporan/rekapabsen/generatejadwal",
-            data: { comp_id: comp_id, 
+            data: { compid: comp_id, 
                     periode_id : periode_id,
                     bulan_id : bulan_id,
                     emp_id : emp_id,

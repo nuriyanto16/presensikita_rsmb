@@ -19,7 +19,7 @@ class Mrekapabsen extends Mst_model
 
     public function generate_absensi($comp_id = null, $emp_id = null, $periode_id = null, $bulan_id = null) 
     {
-	set_time_limit(300);
+	    set_time_limit(300);
         $sql = "CALL Z_P_LAP_GENERATE_ABSENSI_BULANAN(?,?,?,?)";
         $res = $this->db->query($sql,array($comp_id, $emp_id, $periode_id, $bulan_id));
         $result = $res->result();

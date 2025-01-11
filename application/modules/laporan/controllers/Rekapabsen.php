@@ -623,9 +623,11 @@ class Rekapabsen extends Mst_controller
             $obj['jml_jam_kurang'] = number_format($row->jml_jam_kurang/60,2);
             $obj['jml_jam_lembur'] = $row->jml_jam_lembur ;
             $obj['jml_terlambat'] = $row->jml_terlambat ;
+            $obj['menit_terlambat'] = $row->menit_terlambat ;
             $obj['ket_hitungan'] = $row->ket_hitungan ;
             $obj['jml_pot_point_kehadiran'] = isset($array_ketidakhadiran[$row->nik_pegawai]['persen_ketidakhadiran']) ? $array_ketidakhadiran[$row->nik_pegawai]['persen_ketidakhadiran'] : 0;
             $obj['jml_pot_point_keterlambatan'] = isset($array_ketidakhadiran[$row->nik_pegawai]['persen_keterlambatan']) ? $array_ketidakhadiran[$row->nik_pegawai]['persen_keterlambatan'] : 0;
+            $obj['counter'] = $row->counter;
             $output[] = $obj;
         }
         //$build_array['data'] = $output;
@@ -659,10 +661,12 @@ class Rekapabsen extends Mst_controller
             $objSum['jml_jam_kerja'] = $rowSUm->jml_jam_kerja;
             $objSum['jml_jam_kurang'] = "";
             $objSum['jml_terlambat'] = "";
+            $objSum['menit_terlambat'] = "";
             $objSum['jml_jam_lembur'] = $rowSUm->jml_jam_lembur ;
             $objSum['ket_hitungan'] = 0 ;
             $objSum['jml_pot_point_kehadiran'] = "";
             $objSum['jml_pot_point_keterlambatan'] = "";
+            $objSum['counter'] = 0;
             $unitName = $rowSUm->unitName;
             $outputSum[] = $objSum;
         }
@@ -692,10 +696,12 @@ class Rekapabsen extends Mst_controller
             $objJmlCuti['jml_jam_kerja'] = $rowJmlCuti->jml_cuti;
             $objJmlCuti['jml_jam_kurang'] = "";
             $objJmlCuti['jml_terlambat'] = "";
+            $objJmlCuti['menit_terlambat'] = "";
             $objJmlCuti['jml_jam_lembur'] = $rowJmlCuti->jml_jam_lembur ;
             $objJmlCuti['ket_hitungan'] = 0 ;
             $objJmlCuti['jml_pot_point_kehadiran'] = '';
             $objJmlCuti['jml_pot_point_keterlambatan'] = '';
+            $objJmlCuti['counter'] = 0;
             $outputJmlCuti[] = $objJmlCuti;
         }
 
@@ -724,10 +730,12 @@ class Rekapabsen extends Mst_controller
             $objSisaCuti['jml_jam_kerja'] = 12 - $rowSisaCuti->jml_cuti;
             $objSisaCuti['jml_jam_kurang'] = "";
             $objSisaCuti['jml_terlambat'] = "";
+            $objSisaCuti['menit_terlambat'] = "";
             $objSisaCuti['jml_jam_lembur'] = $rowSisaCuti->jml_jam_lembur ;
             $objSisaCuti['ket_hitungan'] = 0 ;
             $objSisaCuti['jml_pot_point_kehadiran'] = '';
             $objSisaCuti['jml_pot_point_keterlambatan'] = '';
+            $objSisaCuti['counter'] = 0;
             $unitName = $rowSisaCuti->unitName;
             $outputSisaCuti[] = $objSisaCuti;
         }
@@ -758,10 +766,12 @@ class Rekapabsen extends Mst_controller
             $objJmlSakit['jml_jam_kerja'] = $rowJmlSakit->jml_sakit;
             $objJmlSakit['jml_jam_kurang'] = "";
             $objJmlSakit['jml_terlambat'] = "";
+            $objJmlSakit['menit_terlambat'] = "";
             $objJmlSakit['jml_jam_lembur'] = $rowJmlSakit->jml_jam_lembur ;
             $objJmlSakit['ket_hitungan'] = 0 ;
             $objJmlSakit['jml_pot_point_kehadiran'] = '';
             $objJmlSakit['jml_pot_point_keterlambatan'] = '';
+            $objJmlSakit['counter'] = 0;
             $unitName = $rowJmlSakit->unitName;
             $outputJmlSakit[] = $objJmlSakit;
         }
@@ -792,10 +802,12 @@ class Rekapabsen extends Mst_controller
             $objJmlDispensasi['jml_jam_kerja'] = $rowJmlDispensasi->jml_dispensasi;
             $objJmlDispensasi['jml_jam_kurang'] = "";
             $objJmlDispensasi['jml_terlambat'] = "";
+            $objJmlDispensasi['menit_terlambat'] = "";
             $objJmlDispensasi['jml_jam_lembur'] = $rowJmlDispensasi->jml_jam_lembur ;
             $objJmlDispensasi['ket_hitungan'] = 0 ;
             $objJmlDispensasi['jml_pot_point_kehadiran'] = '';
             $objJmlDispensasi['jml_pot_point_keterlambatan'] = '';
+            $objJmlDispensasi['counter'] = 0;
             $unitName = $rowJmlDispensasi->unitName;
             $outputJmlDispensasi[] = $objJmlDispensasi;
         }
@@ -826,10 +838,12 @@ class Rekapabsen extends Mst_controller
             $objJmlPelatihan['jml_jam_kerja'] = $rowJmlPelatihan->jml_pelatihan;
             $objJmlPelatihan['jml_jam_kurang'] = "";
             $objJmlPelatihan['jml_terlambat'] = "";
+            $objJmlPelatihan['menit_terlambat'] = "";
             $objJmlPelatihan['jml_jam_lembur'] = $rowJmlPelatihan->jml_jam_lembur ;
             $objJmlPelatihan['ket_hitungan'] = 0 ;
             $objJmlPelatihan['jml_pot_point_kehadiran'] = '';
             $objJmlPelatihan['jml_pot_point_keterlambatan'] = '';
+            $objJmlPelatihan['counter'] = 0;
             $unitName = $rowJmlPelatihan->unitName;
             $outputJmlPelatihan[] = $objJmlPelatihan;
         }
@@ -876,6 +890,7 @@ class Rekapabsen extends Mst_controller
                 $objSumPersonil['jml_jam_kerja'] = $rowSmp->jml_jam_kerja;
                 $objSumPersonil['jml_jam_kurang'] = $rowSmp->jml_jam_kurang;
                 $objSumPersonil['jml_terlambat'] = $rowSmp->jml_terlambat;
+                $objSumPersonil['menit_terlambat'] = $rowSmp->menit_terlambat;
                 $objSumPersonil['jml_jam_lembur'] = $rowSmp->jml_jam_lembur ;
                 $objSumPersonil['ket_hitungan'] = 0 ;
                 $outputSumPersonil[] = $objSumPersonil;
@@ -907,10 +922,12 @@ class Rekapabsen extends Mst_controller
             $objSum['jml_jam_kerja'] = "";
             $objSum['jml_jam_kurang'] = "";
             $objSum['jml_terlambat'] = "";
+            $objSum['menit_terlambat'] = "";
             $objSum['jml_jam_lembur'] = "";
             $objSum['ket_hitungan'] = 0 ;
             $objSum['jml_pot_point_kehadiran'] = isset($array_ketidakhadiran[$rowSUm->nik_pegawai]['persen_ketidakhadiran']) ? $array_ketidakhadiran[$rowSUm->nik_pegawai]['persen_ketidakhadiran'] : 0;
             $objSum['jml_pot_point_keterlambatan'] = isset($array_ketidakhadiran[$rowSUm->nik_pegawai]['persen_keterlambatan']) ? $array_ketidakhadiran[$rowSUm->nik_pegawai]['persen_keterlambatan'] : 0;
+            $objSum['counter'] = 0 ;
             $outputSumPoint1[] = $objSum;
         }
         //echo '<pre>';print_r($outputSumPoint1);die();
@@ -940,10 +957,12 @@ class Rekapabsen extends Mst_controller
             $objSum['jml_jam_kerja'] = "";
             $objSum['jml_jam_kurang'] = "";
             $objSum['jml_terlambat'] = "";
+            $objSum['menit_terlambat'] = "";
             $objSum['jml_jam_lembur'] = "";
             $objSum['ket_hitungan'] = 0 ;
             $objSum['jml_pot_point_kehadiran'] = isset($array_ketidakhadiran[$rowSUm->nik_pegawai]['persen_ketidakhadiran']) ? $array_ketidakhadiran[$rowSUm->nik_pegawai]['persen_ketidakhadiran'] : 0;
             $objSum['jml_pot_point_keterlambatan'] = isset($array_ketidakhadiran[$rowSUm->nik_pegawai]['persen_keterlambatan']) ? $array_ketidakhadiran[$rowSUm->nik_pegawai]['persen_keterlambatan'] : 0;
+            $objSum['counter'] = 0 ;
             $outputSumPoint2[] = $objSum;
         }
         

@@ -18,6 +18,7 @@ class Organisasi extends Mst_controller
         $this->load->model("Munit", "munit");
         $this->load->model("Mcompany", "mcompany");
         $this->load->model("Mcostcenter", "mcostcenter");
+        $this->load->model("Mtimeprofile", "mtmp");
     }
 
     public function index()
@@ -126,6 +127,7 @@ class Organisasi extends Mst_controller
         $stdClass->unitName = '';
         $stdClass->unitAlias = '';
         $stdClass->costcenter_code = '';
+        $stdClass->multiple_kode_unit = '';
 
         if ($id > 0 AND !$this->input->post('id')) {
             // retrieve data for edit
@@ -149,6 +151,7 @@ class Organisasi extends Mst_controller
             $stdClass->unitCode = $this->input->post('unitCode');
             $stdClass->unitName = $this->input->post('unitName');
             $stdClass->unitAlias = $this->input->post('unitAlias');
+            $stdClass->multiple_kode_unit = $this->input->post('multiple_kode_unit');
             //$stdClass->costcenter_code = $this->input->post('costcenter_code');
 
 
@@ -162,6 +165,7 @@ class Organisasi extends Mst_controller
                 $dataIn["unitCode"] = $stdClass->unitCode;
                 $dataIn["unitName"] = $stdClass->unitName;
                 $dataIn["unitAlias"] = $stdClass->unitAlias;
+                $dataIn["multiple_kode_unit"] = $stdClass->multiple_kode_unit;
                 //$dataIn["costcenter_code"] = cempty_to_null($stdClass->costcenter_code);
 
                 //check to see if we are updating data
@@ -265,6 +269,13 @@ class Organisasi extends Mst_controller
         //     'options' => $list_costcenter,
         //     'class' => 'form-control'
         // );
+        $this->data['multiple_kode_unit'] = [
+            'name' => 'multiple_kode_unit', 
+            'id' => 'multiple_kode_unit', 
+            'type' => 'hidden',
+            'class' => 'form-control',
+            'value' => $this->form_validation->set_value('multiple_kode_unit', $stdClass->multiple_kode_unit),
+        ];
 
         $this->data['csrf'] = $this->_get_sess_csrf();
 

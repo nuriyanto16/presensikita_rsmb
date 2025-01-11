@@ -38,7 +38,7 @@ class MrekapDetail extends Mst_model
         $this->db->select("a.bulan, d.bulan_nama,  a.tahun, a.emp_id, b.emp_name, b.nik, b.nik_pegawai,
             DATE_FORMAT(a.tanggal, '%d-%m-%Y') AS tanggal, DATE_FORMAT(a.jdwl_masuk, '%H:%i') AS jdwl_masuk, DATE_FORMAT(a.jdwl_pulang, '%H:%i') AS jdwl_pulang,
             DATE_FORMAT(a.jam_masuk, '%H:%i') AS jam_masuk, DATE_FORMAT(a.jam_pulang, '%H:%i') AS jam_pulang, a.id_abs_type, e.abs_type_desc, a.keterangan,
-            a.stat_libur, a.ket_libur, a.id_tp, a.jml_jam_kerja, a.jml_jam_kurang, a.jml_terlambat, a.jml_psw,
+            a.stat_libur, a.ket_libur, a.id_tp, a.jml_jam_kerja, a.jml_jam_kurang, a.jml_terlambat, a.menit_terlambat, a.jml_psw,
             o.unitName, pe.position_desc, a.kode_jadwal, a.jml_jam_lembur, a.jml_terlambat, 0 as jml_pot_point_kehadiran, 0 as jml_pot_point_keterlambatan,
             CASE WHEN a.tanggal > NOW() THEN 0 ELSE 1 END AS ket_hitungan");
         $this->db->from("z_lap_rekap_details a");
@@ -69,7 +69,7 @@ class MrekapDetail extends Mst_model
             DATE_FORMAT(a.jam_masuk, '%H:%i') AS jam_masuk, DATE_FORMAT(a.jam_pulang, '%H:%i') AS jam_pulang, a.id_abs_type, e.abs_type_desc, a.keterangan,
             a.stat_libur, a.ket_libur, a.id_tp, a.jml_jam_kerja, a.jml_jam_kurang, a.jml_terlambat, a.jml_psw,
             o.unitName, pe.position_desc, a.kode_jadwal, a.jml_jam_lembur, a.jml_terlambat, 0 as jml_pot_point_kehadiran, 0 as jml_pot_point_keterlambatan,
-            CASE WHEN a.tanggal > NOW() THEN 0 ELSE 1 END AS ket_hitungan");
+            CASE WHEN a.tanggal > NOW() THEN 0 ELSE 1 END AS ket_hitungan, a.counter, a.menit_terlambat");
         $this->db->from("z_lap_rekap_details a");
         $this->db->join(config_item('table_employee') . " b", "a.emp_id = b.emp_id", "INNER");
         $this->db->join("z_periode " . " c", "a.tahun = c.periode_id", "INNER");

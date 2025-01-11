@@ -12,17 +12,22 @@ class Importjdwl extends Mst_controller
     function __construct()
     {
         parent::__construct();
-
         $this->MOD_ALIAS = "MOD_PRESENSI_IMPORTJDWL";
         $this->_checkAuthorization($this->MOD_ALIAS);
         $this->load->model("Mimportjdwl", "munit");
         $this->load->model("reference/Mcompany", "mcompany");
         $this->load->model("reference/Mcostcenter", "mcostcenter");
+        $this->load->model("reference/Mperiode", "mperiode");
+       
     }
 
     public function index()
     {
+        // Path file Excel
         $this->data['titlehead'] = "Import Jadwal";
+        $stdClass = new stdClass();
+        $stdClass->bulan_id = null;
+        $stdClass->periode_id = null;
 
         $loadfoot['javascript'] = array(
             HTTP_MOD_JS . 'modules/presensi/importjdwl.js'
@@ -36,6 +41,75 @@ class Importjdwl extends Mst_controller
             $list_company[$row->COMPID] = $row->COMP_NAME;
         }
         $this->data['list_company'] = $list_company;
+
+        // $mperiodes = $this->mperiode->get_data(null,0, 999999);
+        // $list_periode[null] = "Pilih Periode";
+        // foreach ($mperiodes as $row) {
+        //     $list_periode[$row->periode_id] = $row->periode_nama;
+        // }
+
+        // $this->data['periode_id'] = array(
+        //     'name' => 'periode_id',
+        //     'id' => 'periode_id',
+        //     'value' => $this->form_validation->set_value('periode_id', $stdClass->periode_id),
+        //     'options' => $list_periode,
+        //     'class' => 'form-control'
+        // );
+
+        $current_year = date('Y');
+        $list_tahun[null] = "Pilih Tahun";
+        $list_tahun[$current_year - 1] = $current_year - 1; // Tahun sebelumnya
+        $list_tahun[$current_year] = $current_year; // Tahun sekarang
+        $list_tahun[$current_year + 1] = $current_year + 1; // Tahun berikutnya
+
+        $this->data['periode_id'] = array(
+            'name' => 'periode_id',
+            'id' => 'periode_id',
+            'options' => $list_tahun,
+            'value' => $this->form_validation->set_value('periode_id', $stdClass->periode_id),
+            'class' => 'form-control'
+        );
+
+        // option bulan
+        $current_month = date('n');
+        $list_bulan[null] = "Pilih Bulan";
+        for ($i = -2; $i <= 2; $i++) {
+            $adjusted_month = $current_month + $i;
+        
+            // Menangani kondisi di mana bulan menjadi lebih dari 12 atau kurang dari 1
+            if ($adjusted_month < 1) {
+                $adjusted_month += 12;
+            }
+            if ($adjusted_month > 12) {
+                $adjusted_month -= 12;
+            }
+        
+            // Menangani nama bulan
+            $nama_bulan = [
+                1 => "Januari",
+                2 => "Februari",
+                3 => "Maret",
+                4 => "April",
+                5 => "Mei",
+                6 => "Juni",
+                7 => "Juli",
+                8 => "Agustus",
+                9 => "September",
+                10 => "Oktober",
+                11 => "Nopember",
+                12 => "Desember"
+            ];
+        
+            $list_bulan[$adjusted_month] = $nama_bulan[$adjusted_month];
+        }
+
+        $this->data['bulan_id'] = array(
+            'name' => 'bulan_id',
+            'id' => 'bulan_id',
+            'options' => $list_bulan,
+            'value' => $this->form_validation->set_value('bulan_id', $stdClass->bulan_id),
+            'class' => 'form-control'
+        );
 
         $this->_render_page('vimportjdwl_list', $this->data, false, 'tmpl/vwbacktmpl');
     }
@@ -63,34 +137,17 @@ class Importjdwl extends Mst_controller
 
         foreach ($results as $row) {
             $id = $this->qsecure->encrypt($row->unitId);
-
-            $atr_edit = null; $atr_del = null;
-            if ($this->_edit) {
-                $atr_edit['title'] = 'Edit';
-                $atr_edit['url'] = 'reference/organisasi/edit_form/';
-                $atr_edit['class'] = '';
-            }
-            if ($this->_delete) {
-                $atr_del['title'] = 'Import Jadwal';
-                $atr_del['class'] = '';
-                $atr_del['onclick'] = "return confirm('Import Jadwal ?')";
-            }
-
-
-
-            $btnAction = btn_action_group($id, $atr_edit, $atr_del);
-
-//            $aktif = ($row->active) ? anchor("reference/organisasi/deactivate/{$id}", "<i class='fa fa-check text-green'>&nbsp;</i>", array("onclick" => "return confirm('Non-aktifkan data ?');")) :
-//                anchor("reference/organisasi/activate/{$id}    ", "<i class='fa fa-times text-red'>&nbsp;</i>", array("onclick" => "return confirm('Aktifkan data ?');"));
-
+            $btnAction = "<button type='button' 
+                class='btn btn-primary btnShowModal' 
+                data-id='{$row->unitCode}'
+                data-unit-name='{$row->unitName}'>
+                Upload Jadwal Kerja
+                </button>";
             $obj = [];
             $obj['id'] = $row->unitId;
             $obj['parentId'] = $row->parentUnitId;
             $obj['unitCode'] = $row->unitCode;
             $obj['unitName'] = $row->unitName;
-            $obj['tahun'] = "2024";
-            $obj['bulan'] = "Oktober";
-            //$obj['costcenter_code'] = $row->costcenter_code;
             $obj['aksi'] = $btnAction;
             $output[] = $obj;
         }
@@ -110,243 +167,252 @@ class Importjdwl extends Mst_controller
             ->set_output(json_encode($build_array));
     }
 
-    public function edit_form()
-    {
-        $id = 0;
-        $this->data['id'] = trim($this->uri->segment(4));
-        if ($this->data['id'] != "") {
-            $id = $this->qsecure->decrypt($this->data['id']);
-            $this->data['titlehead'] = "Edit Organisasi";
-        } else {
-            $this->data['titlehead'] = "Input Organisasi";
-        }
+    // public function uploadjadwal(){
 
-        // default value
-        $stdClass = new stdClass();
-        $stdClass->COMPID = null;
-        $stdClass->parentUnitId = null;
-        $stdClass->unitCode = '';
-        $stdClass->unitName = '';
-        $stdClass->unitAlias = '';
-        $stdClass->costcenter_code = '';
+    //     // Cek jika ada file yang di-upload
+    //     if (isset($_FILES['file']['name']) && $_FILES['file']['name'] != '') {
+    //         $config['upload_path'] = upload_path.'import_jadwal/'; // Direktori tempat menyimpan file
+    //         $config['allowed_types'] = 'xlsx'; // Format file yang diperbolehkan
+    //         $this->load->library('upload', $config);
 
-        if ($id > 0 AND !$this->input->post('id')) {
-            // retrieve data for edit
-            $stdClass = $this->munit->get($id);
-        }
+    //         if (!$this->upload->do_upload('file')) {
+    //             echo json_encode(['success' => false, 'message' => $this->upload->display_errors()]);
+    //             return;
+    //         } else {
+    //             $fileData = $this->upload->data();
+    //             $fileName = $fileData['file_name']; // Ambil nama file yang di-upload
+    //         }
+    //     }
 
-        if (isset($_POST) && !empty($_POST)) {
-            if ($this->_valid_sess_csrf() === FALSE AND $this->data['id'] != $this->input->post("id")) {
-                show_error($this->lang->line('error_csrf'));
-            }
+    //     // Ambil data dari form
+    //     $tahun = $this->input->post('tahun');
+    //     $bulan = $this->input->post('bulan');
+    //     $kdunit = $this->input->post('kdunit');
 
-            //validate form input
-            $this->form_validation->set_rules('COMPID', 'Company', 'required');
-            $this->form_validation->set_rules('unitCode', 'Kode', 'required');
-            $this->form_validation->set_rules('unitName', 'Nama', 'required');
-            //$this->form_validation->set_rules('parentUnitId', 'Parent Org', 'required');
+    //     exit();
 
-            // POSTING VARIABLE
-            $stdClass->COMPID = $this->input->post('COMPID');
-            $stdClass->parentUnitId = $this->input->post('parentUnitId');
-            $stdClass->unitCode = $this->input->post('unitCode');
-            $stdClass->unitName = $this->input->post('unitName');
-            $stdClass->unitAlias = $this->input->post('unitAlias');
-            //$stdClass->costcenter_code = $this->input->post('costcenter_code');
-
-
-            if ($this->form_validation->run($this) === TRUE) {
-                $isError = true;
-                $isUpdate = false;
-
-                $dataIn = array();
-                $dataIn["COMPID"] = $stdClass->COMPID;
-                $dataIn["parentUnitId"] = empty($stdClass->parentUnitId) ? null : $stdClass->parentUnitId;
-                $dataIn["unitCode"] = $stdClass->unitCode;
-                $dataIn["unitName"] = $stdClass->unitName;
-                $dataIn["unitAlias"] = $stdClass->unitAlias;
-                //$dataIn["costcenter_code"] = cempty_to_null($stdClass->costcenter_code);
-
-                //check to see if we are updating data
-                if ($id > 0 AND $this->input->post('id')) { // update
-                    $isUpdate = true;
-                    if ($this->munit->update($id, $dataIn)) {
-                        $isError = false;
-                        $this->mcommon->setLog($this->get_userid(), $this->MOD_ALIAS, $id, "Organisasi Diupdate");
-                    }
-                } else { // insert
-                    if ($this->munit->insert($dataIn)) {
-                        $isError = false;
-                        $id = $this->munit->id;
-                        $this->mcommon->setLog($this->get_userid(), $this->MOD_ALIAS, $id, "Organisasi Baru");
-                    }
-                }//endif insert or update
-
-                if ($isError) {
-                    //set the flash data error message if there is one
-                    $this->data['errmsg'] = $this->_get_message(($isUpdate) ? "FAILED_UPDATED" : "FAILED_INSERTED");
-                    $this->session->set_flashdata('errmsg', $this->data['errmsg']);
-                } else {
-                    $success_msg = ($isUpdate) ? "SUCCESS_UPDATED" : "SUCCESS_INSERTED";
-                    $success_msg = $this->_get_message($success_msg);
-                    $this->session->set_flashdata('message', $success_msg);
-                    redirect("reference/organisasi", 'refresh');
-                }
-            } else {
-                $this->data['errmsg'] = validation_errors();
-            }
-        }//endif POST
-
-        // custom load stylesheet, place at header
-        $loadhead['stylesheet'] = array();
-        $this->data['loadhead'] = $loadhead;
-
-        // custom load javascript, place at footer
-        $loadfoot['javascript'] = array(
-            HTTP_MOD_JS . 'modules/reference/organisasi_form.js'
-        );
-        $this->data['loadfoot'] = $loadfoot;
-
-        //display the form
-        $this->data['unitCode'] = array(
-            'name' => 'unitCode',
-            'id' => 'unitCode',
-            'type' => 'text',
-            'class' => 'form-control',
-            'maxLength' => '10',
-            'value' => $this->form_validation->set_value('unitCode', $stdClass->unitCode)
-        );
-        $this->data['unitName'] = array(
-            'name' => 'unitName',
-            'id' => 'unitName',
-            'type' => 'text',
-            'class' => 'form-control',
-            'maxLength' => '250',
-            'value' => $this->form_validation->set_value('unitName', $stdClass->unitName)
-        );
-        $this->data['unitAlias'] = array(
-            'name' => 'unitAlias',
-            'id' => 'unitAlias',
-            'type' => 'text',
-            'class' => 'form-control',
-            'maxLength' => '250',
-            'value' => $this->form_validation->set_value('unitAlias', $stdClass->unitAlias)
-        );
-
-        // select option company
-        $companies = $this->mcompany->get_data(null, null, 999999);
-        $list_company[null] = "Pilih Perusahaan";
-        foreach ($companies as $row) {
-            $list_company[$row->COMPID] = $row->COMP_NAME;
-        }
-        $this->data['COMPID'] = array(
-            'name' => 'COMPID',
-            'id' => 'COMPID',
-            'value' => $this->form_validation->set_value('COMPID', $stdClass->COMPID),
-            'options' => $list_company,
-            'class' => 'form-control'
-        );
-
-        // select option parent
-        $this->data['parentUnitId'] = array(
-            'name' => 'parentUnitId',
-            'id' => 'parentUnitId',
-            'value' => $this->form_validation->set_value('parentUnitId', $stdClass->parentUnitId),
-            'class' => 'form-control col-md-12'
-        );
-
-        // select option cost center
-        // $costcenters = $this->mcostcenter->get_data(null, 0, 999999);
-        // $list_costcenter[null] = "Pilih Cost Center";
-        // foreach ($costcenters as $row) {
-        //     $list_costcenter[$row->costcenter_code] = $row->costcenter_code;
-        // }
-        // $this->data['costcenter_code'] = array(
-        //     'name' => 'costcenter_code',
-        //     'id' => 'costcenter_code',
-        //     'value' => $this->form_validation->set_value('costcenter_code', $stdClass->costcenter_code),
-        //     'options' => $list_costcenter,
-        //     'class' => 'form-control'
-        // );
-
-        $this->data['csrf'] = $this->_get_sess_csrf();
-
-        return $this->_render_page('reference/vorganisasi_form', $this->data, false, 'tmpl/vwbacktmpl');
-    }
-
-    public function sinkronOrganisasi(){
         
-        $curl = curl_init();
+    //     //PROSES IMPORT
+    //     $filePath = upload_path.'import_jadwal/arafah.xlsx'; // Sesuaikan path file Anda
+    //     $this->load->library('PhpSpreadsheet_Loader');
+    //     try {
+    //         // Memuat file Excel
+    //         $spreadsheet = $this->phpspreadsheet_loader->readExcel($filePath);
 
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+    //         // Mengambil data dari spreadsheet
+    //         $sheet = $spreadsheet->getActiveSheet();
+    //         $data = $sheet->toArray(null, true, true, true);
 
-        curl_setopt_array($curl, array(
-            // CURLOPT_URL => 'https://api.rsmb.co.id:4848/app/sdi/get_organisasi',
-            // CURLOPT_URL => 'http://localhost/rsmb/api/public/app/sdi/get_organisasi',
-            CURLOPT_URL => API_SIMRS.'app/sdi/get_organisasi',
+    //         // Tampilkan data
+    //         // echo '<pre>';
+    //         // print_r($data);
+    //         // echo '</pre>';
 
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_HTTPHEADER => array(
-                'x-username: r5mb53!',
-                'x-password: p4r1purn4'
-            ),
-        ));
+    //         // Iterasi data baris per baris
+    //         $x=0;
+    //         $columns = [
+    //             'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 
+    //             'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI'
+    //         ];
+    //         foreach ($data as $row) {
+    //             if($x>0) {
+    //                 // Ambil data ID Finger, Nama, Jabatan, dan Unit
+    //                 $id_finger = $row['A'];
+    //                 $nama = $row['B'];
+    //                 $jabatan = $row['C'];
+    //                 $unit = $row['D'];
 
-        $response = curl_exec($curl);
-        curl_close($curl);
+    //                 // Loop untuk setiap kolom tanggal (E hingga AI)
+    //                 foreach ($columns as $column) {
+                        
+    //                     // Periksa jika kolom tidak kosong
+    //                     if (!empty($row[$column])) {
+    //                         // Format tanggal sesuai dengan format yang diinginkan
+    //                         $tanggal = '2024-12-' . str_pad(ord($column) - ord('E') + 1, 2, '0', STR_PAD_LEFT);
+
+    //                         // Insert atau Update data dan mendapatkan hasilnya
+    //                         $result = $this->munit->InsertUpdateShift($id_finger, $tanggal, $row[$column]);
+
+    //                         // Mengecek hasil dan memberikan feedback
+    //                         if (is_numeric($result)) {
+    //                             echo $id_finger." -- ".$tanggal." -- ". $row[$column]."</br/>";
+    //                             // Jika result adalah ID yang baru dimasukkan
+    //                             // echo "Data berhasil dimasukkan dengan ID: " . $result . "<br>";
+    //                         } else if ($result) {
+    //                             // Jika result adalah true (update berhasil)
+    //                             echo "Data berhasil diperbarui.<br>";
+    //                         } else {
+    //                             // Jika result adalah false (tidak ada perubahan)
+    //                             echo "Tidak ada perubahan pada data.<br>";
+    //                         }
+    //                     }
+    //                 }
+    //                 echo "<br/>";
+    //             }
+    //             $x++;
+    //         }
+
+            
+
+    //         // Periksa apakah ada data untuk diimpor
+    //         if (!empty($data)) {
+    //             // Masukkan data ke database menggunakan model
+    //             echo "Data berhasil diimpor.";
+    //         } else {
+    //             echo "Tidak ada data untuk diimpor.";
+    //         }
+    //     } catch (Exception $e) {
+    //         echo "Error: " . $e->getMessage();
+    //     }
+    // }
 
 
-        $this->munit->deleteAllOrganisasi();
+    public function uploadjadwal() {
 
-        $arrData = json_decode($response, true);
-        $resData = ($arrData['response']['data']);
+        // Cek jika ada file yang di-upload
+        if (isset($_FILES['file']['name']) && $_FILES['file']['name'] != '') {
+            $config['upload_path'] = upload_path.'importjadwal/';
+            $config['allowed_types'] = 'xlsx';
+            // Mengganti nama file
+            // $newFileName = 'jadwal_' . date('Ymd_His') . '.xlsx'; // Ganti dengan format yang sesuai
+            // $config['file_name'] = $newFileName; // Menetapkan nama baru untuk file
+               // Mengganti nama file jika perlu
+            $newFileName = 'jadwal_' . date('Ymd_His') . '.xlsx'; // Ganti dengan format yang sesuai
+            $config['file_name'] = $newFileName;
+            $this->upload->initialize($config);
+                
 
-        foreach ($resData as $rowPeg) {
-            // Initialize default values if certain keys are missing
-            $rowPeg['is_deleted'] = $rowPeg['is_deleted'] ?? 0;
-    
-            // Insert modified data into the database
-            $insertData = array(
-                'unitId' => $rowPeg['id'],
-                'unitCode' => $rowPeg['code'],
-                'unitName' => $rowPeg['name'],
-                'unitAlias' => '4',
-                'parentUnitId' => null, //sementara pakai id (harusnya ini sudah di set dari simrs)
-                'defPositionId' => 1,
-                'siteId' => 1,
-                'active' => 1,
-                'unitCodeDsm' => null,
-                'COMPID' => 1,
-                'costcenter_code' => '',
-                'multiple_kode_unit' => ''
-            );
-
-    
-            if (!$this->munit->insertOrganisasi($insertData)) {
-                $success = false; 
+            if (!$this->upload->do_upload('file')) {
+                // Jika upload gagal
+                echo json_encode(['success' => false, 'message' => $this->upload->display_errors()]);
+                return;
+            } else {
+      
+                // Ambil nama file yang di-upload
+                $fileData = $this->upload->data();
+                $fileName = $fileData['file_name']; // Nama file yang di-upload
+                $filePath = $config['upload_path'] . $fileName; // Gabungkan path dan nama file
             }
-        }
+        }       
     
-        if($success){
-            $success_msg = "SUCCESS_SINKRONISASI";
-            $success_msg = $this->_get_message($success_msg);
-            $this->session->set_flashdata('message', $success_msg);
-            redirect("reference/organisasi", 'refresh');
-        }else{
-            $success_msg = "FAILED_SINKRONISASI";
-            $success_msg = $this->_get_message($success_msg);
-            $this->session->set_flashdata('message', $success_msg);
-            redirect("reference/organisasi", 'refresh');
-        }
+        // Ambil data dari form
+        $tahun = $this->input->post('periode_id');
+        $bulan = $this->input->post('bulan_id');
+        $kdunit = $this->input->post('kdunit');        
 
+        $all_tp = "";
+        $resAllCode = $this->munit->get_multiple_kode_unit_by_unitAll();
+        foreach ($resAllCode as $rowALlcode) {
+            $all_tp .=",".$rowALlcode->id_tp;
+        }
+        $bulan_param = str_pad($bulan, 2, '0', STR_PAD_LEFT);
+        // PROSES IMPORT
+        $this->load->library('PhpSpreadsheet_Loader');
+        try {
+            // Memuat file Excel
+            $spreadsheet = $this->phpspreadsheet_loader->readExcel($filePath);
+    
+            // Mengambil data dari spreadsheet
+            $sheet = $spreadsheet->getActiveSheet();
+            $data = $sheet->toArray(null, true, true, true);
+    
+            // Iterasi data baris per baris
+            $x = 0;
+
+            $message = "";
+            foreach ($data as $row) {
+                if ($x > 0) {
+                    // Ambil data ID Finger, Nama, Jabatan, dan Unit
+                    $id_finger = $row['A'];
+                    $nama = $row['B'];
+                    $jabatan = $row['C'];
+                    $unit = $row['D'];
+
+                    // CEK ID TP YANG TERDAFTAR DI UNIT
+                    $multiple_kode_unit = $this->munit->get_multiple_kode_unit_by_unitCode($kdunit);
+                    $multile_tp = str_replace(";", ",", $multiple_kode_unit);
+                    $multile_tp = $multile_tp.$all_tp;
+
+                    $rowPeg = $this->munit->getNikPegawai($id_finger);
+                    $columns = [
+                        'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 
+                        'AA', 'AB', 'AC', 'AD', 'AE', 'AF', 'AG', 'AH', 'AI'
+                    ];
+                    // Loop untuk setiap kolom tanggal (E hingga AI)
+                    foreach ($columns as $column) {
+                        // Periksa jika kolom tidak kosong
+                        if (!empty($row[$column])) {
+                            // Format tanggal sesuai dengan format yang diinginkan
+                            //$tanggal = ''.$tahun.'-'.$bulan_param.'-'. str_pad(ord($column) - ord('E') + 1, 2, '0', STR_PAD_LEFT);
+                            
+                            $columnIndex = $this->columnToIndex($column) - 4;
+        
+                            // Format tanggal sesuai dengan format yang diinginkan
+                            $tanggal = $tahun . '-' . $bulan_param . '-' . str_pad($columnIndex, 2, '0', STR_PAD_LEFT);
+
+                            // var_dump($tanggal);
+                            // Insert atau Update data dan mendapatkan hasilnya
+                            // GET ID TP
+                            // echo $id_finger." ". $row[$column] ." ".$tanggal. "<br>";
+                            $rowTp = $this->munit->getIdTpFromCodes($multile_tp, $row[$column]);
+                        
+                            if (isset($rowTp) && !empty($rowTp) && isset($rowPeg) && !empty($rowPeg)) {
+                            // if (isset($rowTp) && !empty($rowTp) ) {
+                                $result = $this->munit->InsertUpdateShift($rowPeg['nik'], $tanggal, $rowTp['id_tp']);
+                                if (is_numeric($result)) {
+                                    //$id_finger." -- ".$tanggal." -- ". $row[$column]."</br/>";
+                                    $message ="Data berhasil diimpor";
+                                } else if ($result) {
+                                    $message ="Data berhasil diperbarui";
+                                } else {
+                                    $message ="Tidak ada perubahan pada data";
+                                }
+                            }
+    
+                            // Mengecek hasil dan memberikan feedback
+
+                        }
+                    }
+                }
+                $x++;
+            }
+    
+            // Periksa apakah ada data untuk diimpor
+            // Proses untuk menyimpan data ke database
+            if (!empty($data)) {
+                // Masukkan data ke database menggunakan model
+                // Contoh: $this->some_model->saveData($data);
+                $message = "Data berhasil diimpor.";
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['success' => true, 'message' => $message]));
+            } else {
+                $message = "Tidak ada data untuk diimpor.";
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['success' => false, 'message' => $message]));
+            }
+        } catch (Exception $e) {
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode(['success' => false, 'message' => $e->getMessage()]));
+        }
     }
+
+    function columnToIndex($column) {
+        $column = strtoupper($column); // Pastikan huruf kapital
+        $length = strlen($column);
+        $index = 0;
+        
+        // Menghitung indeks berdasarkan kolom, misalnya A = 1, Z = 26, AA = 27, dst.
+        for ($i = 0; $i < $length; $i++) {
+            $index *= 26; // Setiap huruf menggeser 26 kali (A-Z)
+            $index += ord($column[$i]) - ord('A') + 1;
+        }
+        
+        return $index;
+    }
+    
 
     public function get_node() {
         $out = [];

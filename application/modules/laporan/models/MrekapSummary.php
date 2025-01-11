@@ -24,7 +24,7 @@ class MrekapSummary extends Mst_model
         $this->db->select("a.bulan, d.bulan_nama,  a.tahun, a.emp_id, b.emp_name, b.nik, b.nik_pegawai, a.jml_hadir, a.jml_alpha,"
             . ",  a.jml_dinas, a.jml_izin, a.jml_cuti, a.jml_sakit, a.jml_dispensasi, a.jml_pelatihan, a.jml_reimburse, a.jml_jam_kurang, a.jml_jam_kerja "
             . ",  a.jml_pot_point_kehadiran, a.jml_pot_point_keterlambatan, a.jml_jam_lembur, jml_terlambat"
-            . ",  o.unitName, pe.position_desc");
+            . ",  o.unitName, pe.position_desc, a.menit_terlambat");
 
         $this->db->from("z_lap_rekap_summary a");
         $this->db->join(config_item('table_employee') . " b", "a.emp_id = b.emp_id", "INNER");

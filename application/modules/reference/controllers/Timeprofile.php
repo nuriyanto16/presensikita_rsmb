@@ -19,6 +19,7 @@ class Timeprofile extends Mst_controller
         $this->load->model("Munit", "munit");
         $this->load->model("Mcompany", "mcompany");
         $this->load->model("Mtimeprofile", "mtmp");
+        $this->load->model("Mtimeprofileunit", "mtmpunit");
     }
 
     public function index()
@@ -109,6 +110,60 @@ class Timeprofile extends Mst_controller
             $obj['hari_7_jam_in'] = $row->hari_7_jam_in;
             $obj['hari_7_jam_out'] = $row->hari_7_jam_out;
             $obj['hari_7_jam_out'] = $row->hari_7_jam_out;
+            $obj['aksi'] = $btnAction;
+            $output[] = $obj;
+        }
+        $build_array["data"] = $output;
+
+        $this->output
+            ->set_content_type("application/json")
+            ->set_output(json_encode($build_array));
+    }
+
+    public function listsUnit()
+    {
+        $start = intval($this->input->post('start'));
+        $limit = intval($this->input->post('length'));
+        $filters = $this->input->post('filters');
+        $order = $this->input->post('order');
+        $listjadwal = $this->input->post('listjadwal');
+        
+        $results = $this->mtmpunit->get(null, $start, $limit, $order, $filters, $listjadwal);
+        $totalfiltered = $this->mtmpunit->get_cnt($filters, $listjadwal);
+        $totaldata = $this->mtmpunit->get_cnt(null, $listjadwal);
+        $maxpage = $limit <> 0 ? ceil($totalfiltered / $limit) : 0;
+
+        $build_array = array(
+            "last_page" => $maxpage,
+            "recordsTotal" => $totaldata,
+            "recordsFiltered" => $totalfiltered,
+            "data" => array()
+        );
+        $output = [];
+
+        foreach ($results as $row) {
+            $id = $this->qsecure->encrypt($row->id_tp);
+            $atr_del = null;
+            $atr_edit = null; $atr_del = null;
+            if ($this->_edit) {
+                $atr_edit['title'] = 'Edit';
+                $atr_edit['url'] = 'reference/timeprofile/edit_form/';
+                $atr_edit['class'] = '';
+            }
+            if ($this->_delete) {
+                $atr_del['title'] = 'Hapus';
+                $atr_del['url'] = 'reference/timeprofile/deleteunit/';
+                $atr_del['class'] = '';
+                $atr_del['onclick'] = "return confirm('Hapus data ?')";
+            }
+            $btnAction = btn_action_group($id, null, $atr_del);
+ 
+            $obj = [];
+            $obj['id_tp'] = $row->id_tp;
+            $obj['deskripsi'] = $row->deskripsi;
+            $obj['kode'] = $row->kode;
+            $obj['hari_1_jam_in'] = $row->hari_1_jam_in;
+            $obj['hari_1_jam_out'] = $row->hari_1_jam_out;
             $obj['aksi'] = $btnAction;
             $output[] = $obj;
         }

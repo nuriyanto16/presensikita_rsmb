@@ -175,7 +175,7 @@ class Mpenjadwalan extends Mst_model
         return $this->_data;
     }
 
-    public function UpdateJadwal($data,$tgl,$nik){
+    public function UpdateJadwal2($data,$tgl,$nik){
         $this->db->trans_begin();
         $this->db->where("tp_start_date",$tgl);
         $this->db->where("nik",$nik);
@@ -191,6 +191,43 @@ class Mpenjadwalan extends Mst_model
             $return=true;          
         }
         return $return;
+    }
+
+    public function UpdateJadwal($data, $tgl, $nik) {
+        $this->db->trans_begin();
+    
+        // Cek data existing berdasarkan tanggal dan NIK
+        $this->db->select('id_tp, tp_start_date, counter'); // Pastikan id_tp dipilih
+        $this->db->where("tp_start_date", $tgl);
+        $this->db->where("nik", $nik);
+        $query = $this->db->get("z_tp_person");
+    
+        if ($query->num_rows() > 0) {
+            $existing_data = $query->row();
+    
+            // Jika tanggal dan shift tidak sama
+            if ($existing_data->id_tp != $data['id_tp'] || $existing_data->tp_start_date != $tgl) {
+                $this->db->set('counter', 'counter + 1', false); // Operasi numerik
+            }
+    
+            // Update data
+            $this->db->where("tp_start_date", $tgl);
+            $this->db->where("nik", $nik);
+            $this->db->update("z_tp_person", $data);
+        } else {
+            // Jika data tidak ditemukan, rollback transaksi
+            $this->db->trans_rollback();
+            return false;
+        }
+    
+        // Commit transaksi jika tidak ada masalah
+        if ($this->db->trans_status() === FALSE) {
+            $this->db->trans_rollback();
+            return false;
+        } else {
+            $this->db->trans_commit();
+            return true;
+        }
     }
 
     public function Insertjadwal($data){

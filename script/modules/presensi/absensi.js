@@ -46,6 +46,14 @@ $(document).ready(function () {
                 title: "FID", field: "fid", sorter: "string",
                 width: "10%", headerFilter: "input", align : "left"
             },
+            {
+                title: "Machine ID", field: "machine_id", sorter: "string",
+                width: "10%", headerFilter: "input", align : "left"
+            },
+            {
+                title: "IP Machine", field: "ip", sorter: "string",
+                width: "10%", headerFilter: "input", align : "left"
+            },
         ],
         locale: 'id',
         placeholder: "Tidak ada data",

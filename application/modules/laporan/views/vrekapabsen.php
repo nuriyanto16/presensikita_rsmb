@@ -1,3 +1,6 @@
+<div id="loading-spinner" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 9999; text-align: center; color: white; font-size: 20px; padding-top: 20%;">
+    Loading...
+</div>
 <div class="container-fluid">
     <div class="row bg-title">
         <div class="col-lg-6 col-md-4 col-sm-4 col-xs-12">

@@ -39,7 +39,7 @@ class Penjadwalan extends Mst_controller
         $this->data['titlehead'] = "Penjadwalan";
 
         $loadfoot['javascript'] = array(
-            HTTP_MOD_JS . 'modules/presensi/importjdwl.js'
+            HTTP_MOD_JS . 'modules/presensi/penjadwalan.js'
         );
         $this->data['loadfoot'] = $loadfoot;
 
@@ -187,6 +187,7 @@ class Penjadwalan extends Mst_controller
             $obj['kode'] = $row->kode;
             $obj['hari_1_jam_in'] = $row->hari_1_jam_in;
             $obj['hari_1_jam_out'] = $row->hari_1_jam_out;
+            $obj['counter'] = $row->counter;
             $obj['aksi'] = $btnAction;
             $output[] = $obj;
         }
@@ -663,6 +664,7 @@ class Penjadwalan extends Mst_controller
     }
 
     public function upload_excel() {
+        $file_name_new = "";
         $nik = $this->input->post('nik');
         if($_FILES['excel_file']['name']) {
             $ar_filename = explode('.',$_FILES['excel_file']['name']); 

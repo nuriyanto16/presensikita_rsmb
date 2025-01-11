@@ -106,6 +106,8 @@ class Absensi extends Mst_controller
             $obj['position_desc'] = $row->position_desc;
             $obj['unitname'] = $row->unitname;
             $obj['fid'] = $row->fid;
+            $obj['machine_id'] = $row->machine_id;
+            $obj['ip'] = $row->ip;
             $obj['aksi'] = $btnAction;
             $output[] = $obj;
         }
